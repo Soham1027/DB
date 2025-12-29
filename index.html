@@ -16,7 +16,6 @@
             overflow: hidden;
             margin: 0;
             height: 100vh;
-            cursor: pointer; /* Hint that user can interact */
         }
 
         .serif-italic {
@@ -73,9 +72,7 @@
 
     <!-- Audio Element -->
     <audio id="bg-music" loop preload="auto">
-        <!-- Main source as specified -->
         <source src="untitled.mp3" type="audio/mpeg">
-        <!-- Fallback to handle case sensitivity if needed -->
         <source src="Untitled.mp3" type="audio/mpeg">
     </audio>
 
@@ -129,25 +126,24 @@
             });
         }
 
-        // Logic to play music on first interaction (browser requirement)
-        const startMusic = () => {
-            music.play().then(() => {
-                console.log("Music started");
-            }).catch(e => {
-                console.log("Audio still blocked; waiting for another interaction.");
-            });
-            // Keep trying to remove listeners on success
-            document.removeEventListener('click', startMusic);
-            document.removeEventListener('touchstart', startMusic);
-            document.removeEventListener('keydown', startMusic);
-        };
-
-        // Listen for any interaction to trigger the audio
-        document.addEventListener('click', startMusic);
-        document.addEventListener('touchstart', startMusic);
-        document.addEventListener('keydown', startMusic);
-
         window.onload = () => {
+            // Attempt to start music immediately at the beginning
+            const playPromise = music.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    console.log("Autoplay started");
+                }).catch(error => {
+                    console.log("Autoplay blocked by browser. Music will start on the first click.");
+                    // Fallback: Start music on the very first click anywhere if autoplay was blocked
+                    const startOnGesture = () => {
+                        music.play();
+                        document.removeEventListener('click', startOnGesture);
+                    };
+                    document.addEventListener('click', startOnGesture);
+                });
+            }
+
             const tl = gsap.timeline();
 
             // Sequence starts automatically on load
@@ -164,15 +160,12 @@
               })
               .to("#step2", { opacity: 0, duration: 1, delay: 2 })
 
-              // Triggers automatic confetti pop up on final screen
               .to("#step3", { 
                 opacity: 1, 
                 visibility: "visible", 
                 duration: 1.5,
                 onStart: () => {
                     slowConfetti();
-                    // One more attempt to play music here if it hasn't started
-                    music.play().catch(() => {});
                 }
               });
         };
