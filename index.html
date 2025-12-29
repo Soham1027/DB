@@ -77,12 +77,6 @@
         <source src="Untitled.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Step 0: Click to Start (Required for Audio Autoplay) -->
-    <!-- <div id="step0" class="screen" style="opacity: 1; visibility: visible;">
-        <h2 class="text-xl opacity-60 mb-6">A message for you</h2>
-        <button id="start-btn" class="btn-sincere">Open ✨</button>
-    </div> -->
-
     <!-- Step 1: Simple Greeting -->
     <div id="step1" class="screen">
         <h1 class="text-4xl md:text-5xl font-medium tracking-tight charcoal-text">Happy Birthday, Dhruvi</h1>
@@ -114,7 +108,6 @@
 
     <script>
         const music = document.getElementById('bg-music');
-        const startBtn = document.getElementById('start-btn');
 
         function slowConfetti() {
             const defaults = {
@@ -133,22 +126,21 @@
             });
         }
 
-        startBtn.addEventListener('click', () => {
-            // Explicitly load and play music on user gesture
-            music.load();
-            music.play().then(() => {
-                console.log("Playback started successfully");
-            }).catch(error => {
-                console.log("Playback failed:", error);
-            });
+        // Logic to play music on first interaction (browser requirement)
+        const startMusic = () => {
+            music.play().catch(e => console.log("Audio waiting for interaction"));
+            document.removeEventListener('click', startMusic);
+            document.removeEventListener('touchstart', startMusic);
+        };
 
+        document.addEventListener('click', startMusic);
+        document.addEventListener('touchstart', startMusic);
+
+        window.onload = () => {
             const tl = gsap.timeline();
 
-            // Slower, more purposeful pacing
-            tl.to("#step0", { opacity: 0, duration: 0.8, onComplete: () => {
-                document.getElementById('step0').style.visibility = 'hidden';
-            }})
-              .to("#step1", { opacity: 1, visibility: "visible", duration: 1.5 })
+            // Slower, more purposeful pacing - Starts automatically
+            tl.to("#step1", { opacity: 1, visibility: "visible", duration: 1.5 })
               .to("#step1", { opacity: 0, duration: 1, delay: 2.5 })
               
               .to("#step2", { opacity: 1, visibility: "visible", duration: 1 })
@@ -161,14 +153,14 @@
               })
               .to("#step2", { opacity: 0, duration: 1, delay: 2 })
 
-              // Added onStart: slowConfetti to trigger the pop up automatically
+              // Triggers automatic confetti pop up on final screen
               .to("#step3", { 
                 opacity: 1, 
                 visibility: "visible", 
                 duration: 1.5,
                 onStart: slowConfetti 
               });
-        });
+        };
     </script>
 </body>
 </html>
