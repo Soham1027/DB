@@ -16,6 +16,7 @@
             overflow: hidden;
             margin: 0;
             height: 100vh;
+            cursor: pointer; /* Hint that user can interact */
         }
 
         .serif-italic {
@@ -36,10 +37,8 @@
             padding: 2rem;
             opacity: 0;
             visibility: hidden;
+            pointer-events: none; /* Allows click-through to body */
         }
-
-        .accent-bg { background-color: #a3b18a; } /* Sage Green */
-        .charcoal-text { color: #4a5d4e; }
 
         .divider {
             height: 1px;
@@ -57,13 +56,13 @@
             transition: all 0.4s ease;
             margin-top: 2rem;
             cursor: pointer;
+            pointer-events: auto; /* Makes button clickable */
         }
         .btn-sincere:hover {
             background: #4a5d4e;
             color: #f4f1ea;
         }
 
-        /* Slow, purposeful animation targets */
         .reveal-text {
             transform: translateY(10px);
             opacity: 0;
@@ -74,12 +73,14 @@
 
     <!-- Audio Element -->
     <audio id="bg-music" loop preload="auto">
+        <!-- Replace 'Untitled.mp3' with your actual file path -->
         <source src="Untitled.mp3" type="audio/mpeg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Step 1: Simple Greeting -->
     <div id="step1" class="screen">
-        <h1 class="text-4xl md:text-5xl font-medium tracking-tight charcoal-text">Happy Birthday, Dhruvi</h1>
+        <h1 class="text-4xl md:text-5xl font-medium tracking-tight">Happy Birthday, Dhruvi</h1>
         <div class="divider"></div>
         <p class="text-lg opacity-60">Hope you're having a good day.</p>
     </div>
@@ -101,15 +102,16 @@
         <div class="mb-6">
             <span class="text-4xl">🥂</span>
         </div>
-        <h2 class="text-5xl font-bold charcoal-text mb-4">Cheers, Dhruvi.</h2>
+        <h2 class="text-5xl font-bold mb-4">Cheers, Dhruvi.</h2>
         <p class="text-xl serif-italic opacity-80">Wishing you a solid year ahead.</p>
-        <button onclick="slowConfetti()" class="btn-sincere">Celebrate ✨</button>
+        <button onclick="slowConfetti(event)" class="btn-sincere">Celebrate ✨</button>
     </div>
 
     <script>
         const music = document.getElementById('bg-music');
 
-        function slowConfetti() {
+        function slowConfetti(e) {
+            if (e) e.stopPropagation();
             const defaults = {
                 origin: { y: 0.7 },
                 colors: ['#a3b18a', '#4a5d4e', '#dad7cd'],
@@ -126,20 +128,25 @@
             });
         }
 
-        // Logic to play music on first interaction (browser requirement)
-        const startMusic = () => {
-            music.play().catch(e => console.log("Audio waiting for interaction"));
-            document.removeEventListener('click', startMusic);
-            document.removeEventListener('touchstart', startMusic);
+        // Critical: Function to start music on first user interaction
+        const handleFirstInteraction = () => {
+            music.play().then(() => {
+                console.log("Music started");
+            }).catch(err => {
+                console.log("Waiting for user interaction...");
+            });
+            // Remove listeners after first success or attempt
+            document.removeEventListener('click', handleFirstInteraction);
+            document.removeEventListener('touchstart', handleFirstInteraction);
         };
 
-        document.addEventListener('click', startMusic);
-        document.addEventListener('touchstart', startMusic);
+        document.addEventListener('click', handleFirstInteraction);
+        document.addEventListener('touchstart', handleFirstInteraction);
 
         window.onload = () => {
             const tl = gsap.timeline();
 
-            // Slower, more purposeful pacing - Starts automatically
+            // Sequence starts automatically on load
             tl.to("#step1", { opacity: 1, visibility: "visible", duration: 1.5 })
               .to("#step1", { opacity: 0, duration: 1, delay: 2.5 })
               
@@ -153,12 +160,13 @@
               })
               .to("#step2", { opacity: 0, duration: 1, delay: 2 })
 
-              // Triggers automatic confetti pop up on final screen
               .to("#step3", { 
                 opacity: 1, 
                 visibility: "visible", 
                 duration: 1.5,
-                onStart: slowConfetti 
+                onStart: () => {
+                    slowConfetti();
+                }
               });
         };
     </script>
