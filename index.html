@@ -36,8 +36,10 @@
             padding: 2rem;
             opacity: 0;
             visibility: hidden;
-            pointer-events: none; /* Allows click-through to body */
         }
+
+        .accent-bg { background-color: #a3b18a; } /* Sage Green */
+        .charcoal-text { color: #4a5d4e; }
 
         .divider {
             height: 1px;
@@ -55,7 +57,6 @@
             transition: all 0.4s ease;
             margin-top: 2rem;
             cursor: pointer;
-            pointer-events: auto; /* Makes button clickable */
         }
         .btn-sincere:hover {
             background: #4a5d4e;
@@ -71,15 +72,20 @@
 </head>
 <body>
 
-    <!-- Audio Element with Autoplay attribute -->
-    <audio id="bg-music" loop preload="auto" autoplay>
-        <source src="untitled.mp3" type="audio/mpeg">
+    <!-- Audio Element -->
+    <audio id="bg-music" loop preload="auto">
         <source src="Untitled.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- Step 0: Click to Start (Required for Audio Autoplay) -->
+    <div id="step0" class="screen" style="opacity: 1; visibility: visible;">
+        <h2 class="text-xl opacity-60 mb-6">A message for you</h2>
+        <button id="start-btn" class="btn-sincere">Open ✨</button>
+    </div>
+
     <!-- Step 1: Simple Greeting -->
     <div id="step1" class="screen">
-        <h1 class="text-4xl md:text-5xl font-medium tracking-tight">Happy Birthday, Dhruvi</h1>
+        <h1 class="text-4xl md:text-5xl font-medium tracking-tight charcoal-text">Happy Birthday, Dhruvi</h1>
         <div class="divider"></div>
         <p class="text-lg opacity-60">Hope you're having a good day.</p>
     </div>
@@ -101,16 +107,16 @@
         <div class="mb-6">
             <span class="text-4xl">🥂</span>
         </div>
-        <h2 class="text-5xl font-bold mb-4">Cheers, Dhruvi.</h2>
+        <h2 class="text-5xl font-bold charcoal-text mb-4">Cheers, Dhruvi.</h2>
         <p class="text-xl serif-italic opacity-80">Wishing you a solid year ahead.</p>
-        <button onclick="slowConfetti(event)" class="btn-sincere">Celebrate ✨</button>
+        <button onclick="slowConfetti()" class="btn-sincere">Celebrate ✨</button>
     </div>
 
     <script>
         const music = document.getElementById('bg-music');
+        const startBtn = document.getElementById('start-btn');
 
-        function slowConfetti(e) {
-            if (e) e.stopPropagation();
+        function slowConfetti() {
             const defaults = {
                 origin: { y: 0.7 },
                 colors: ['#a3b18a', '#4a5d4e', '#dad7cd'],
@@ -127,16 +133,22 @@
             });
         }
 
-        window.onload = () => {
-            // Forcefully attempt playback without interaction listeners
-            music.play().catch(error => {
-                console.log("Browser policy blocked autoplay. Attempting silent fallback or awaiting MEI.");
+        startBtn.addEventListener('click', () => {
+            // Explicitly load and play music on user gesture
+            music.load();
+            music.play().then(() => {
+                console.log("Playback started successfully");
+            }).catch(error => {
+                console.log("Playback failed:", error);
             });
 
             const tl = gsap.timeline();
 
-            // Sequence starts automatically on load
-            tl.to("#step1", { opacity: 1, visibility: "visible", duration: 1.5 })
+            // Slower, more purposeful pacing
+            tl.to("#step0", { opacity: 0, duration: 0.8, onComplete: () => {
+                document.getElementById('step0').style.visibility = 'hidden';
+            }})
+              .to("#step1", { opacity: 1, visibility: "visible", duration: 1.5 })
               .to("#step1", { opacity: 0, duration: 1, delay: 2.5 })
               
               .to("#step2", { opacity: 1, visibility: "visible", duration: 1 })
@@ -149,15 +161,14 @@
               })
               .to("#step2", { opacity: 0, duration: 1, delay: 2 })
 
+              // Added onStart: slowConfetti to trigger the pop up automatically
               .to("#step3", { 
                 opacity: 1, 
                 visibility: "visible", 
                 duration: 1.5,
-                onStart: () => {
-                    slowConfetti();
-                }
+                onStart: slowConfetti 
               });
-        };
+        });
     </script>
 </body>
 </html>
