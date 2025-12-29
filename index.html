@@ -63,17 +63,6 @@
             color: #f4f1ea;
         }
 
-        .music-control {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 100;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: opacity 0.3s;
-        }
-        .music-control:hover { opacity: 1; }
-
         /* Slow, purposeful animation targets */
         .reveal-text {
             transform: translateY(10px);
@@ -87,10 +76,6 @@
     <audio id="bg-music" loop>
         <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_730626087b.mp3" type="audio/mpeg">
     </audio>
-
-    <div id="music-btn" class="music-control">
-        <span id="music-icon" class="text-2xl">🔇</span>
-    </div>
 
     <!-- Step 0: Click to Start (Required for Audio Autoplay) -->
     <div id="step0" class="screen" style="opacity: 1; visibility: visible;">
@@ -129,23 +114,7 @@
 
     <script>
         const music = document.getElementById('bg-music');
-        const musicBtn = document.getElementById('music-btn');
-        const musicIcon = document.getElementById('music-icon');
         const startBtn = document.getElementById('start-btn');
-        let isPlaying = false;
-
-        function toggleMusic() {
-            if (isPlaying) {
-                music.pause();
-                musicIcon.innerText = "🔇";
-            } else {
-                music.play();
-                musicIcon.innerText = "🔊";
-            }
-            isPlaying = !isPlaying;
-        }
-
-        musicBtn.addEventListener('click', toggleMusic);
 
         function slowConfetti() {
             const defaults = {
@@ -165,10 +134,8 @@
         }
 
         startBtn.addEventListener('click', () => {
-            // Start Music
+            // Start Music - It will now play continuously without a toggle option
             music.play();
-            isPlaying = true;
-            musicIcon.innerText = "🔊";
 
             const tl = gsap.timeline();
 
