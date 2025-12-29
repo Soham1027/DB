@@ -174,6 +174,11 @@
             }
         }
 
+        function updateEmojiFrequency(ms) {
+            if (emojiInterval) clearInterval(emojiInterval);
+            emojiInterval = setInterval(createEmoji, ms);
+        }
+
         startBtn.addEventListener('click', () => {
             // Explicitly load and play music on user gesture
             music.load();
@@ -183,19 +188,29 @@
                 console.log("Playback failed:", error);
             });
 
-            // Start occasional floating emojis
-            emojiInterval = setInterval(createEmoji, 2000);
+            // Start initial floating emojis (Step 0)
+            updateEmojiFrequency(1800);
 
             const tl = gsap.timeline();
 
-            // Slower, more purposeful pacing
+            // Sequence Timing with progressive emoji build-up
             tl.to("#step0", { opacity: 0, duration: 0.8, onComplete: () => {
                 document.getElementById('step0').style.visibility = 'hidden';
             }})
-              .to("#step1", { opacity: 1, visibility: "visible", duration: 1.5 })
+              .to("#step1", { 
+                opacity: 1, 
+                visibility: "visible", 
+                duration: 1.5,
+                onStart: () => updateEmojiFrequency(1400) // Increase for Step 1
+              })
               .to("#step1", { opacity: 0, duration: 1, delay: 2.5 })
               
-              .to("#step2", { opacity: 1, visibility: "visible", duration: 1 })
+              .to("#step2", { 
+                opacity: 1, 
+                visibility: "visible", 
+                duration: 1,
+                onStart: () => updateEmojiFrequency(1000) // Increase for Step 2
+              })
               .to(".reveal-text", { 
                 opacity: 1, 
                 y: 0, 
@@ -205,16 +220,14 @@
               })
               .to("#step2", { opacity: 0, duration: 1, delay: 2 })
 
-              // Added onStart: slowConfetti to trigger the pop up automatically
+              // Climax at Step 3
               .to("#step3", { 
                 opacity: 1, 
                 visibility: "visible", 
                 duration: 1.5,
                 onStart: () => {
                     slowConfetti();
-                    // Increase emoji frequency for the finale
-                    clearInterval(emojiInterval);
-                    emojiInterval = setInterval(createEmoji, 800);
+                    updateEmojiFrequency(400); // Most intense for the finale
                 }
               });
         });
