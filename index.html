@@ -134,7 +134,7 @@
         }
 
         startBtn.addEventListener('click', () => {
-            // Start Music - It will now play continuously without a toggle option
+            // Start Music
             music.play();
 
             const tl = gsap.timeline();
@@ -156,7 +156,13 @@
               })
               .to("#step2", { opacity: 0, duration: 1, delay: 2 })
 
-              .to("#step3", { opacity: 1, visibility: "visible", duration: 1.5 });
+              // Added onStart: slowConfetti to trigger the pop up automatically
+              .to("#step3", { 
+                opacity: 1, 
+                visibility: "visible", 
+                duration: 1.5,
+                onStart: slowConfetti 
+              });
         });
     </script>
 </body>
