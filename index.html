@@ -73,8 +73,8 @@
 <body>
 
     <!-- Audio Element -->
-    <audio id="bg-music" loop>
-        <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_730626087b.mp3" type="audio/mpeg">
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Step 0: Click to Start (Required for Audio Autoplay) -->
@@ -134,8 +134,13 @@
         }
 
         startBtn.addEventListener('click', () => {
-            // Start Music
-            music.play();
+            // Explicitly load and play music on user gesture
+            music.load();
+            music.play().then(() => {
+                console.log("Playback started successfully");
+            }).catch(error => {
+                console.log("Playback failed:", error);
+            });
 
             const tl = gsap.timeline();
 
