@@ -36,6 +36,7 @@
             padding: 2rem;
             opacity: 0;
             visibility: hidden;
+            z-index: 10;
         }
 
         .accent-bg { background-color: #a3b18a; } /* Sage Green */
@@ -57,6 +58,7 @@
             transition: all 0.4s ease;
             margin-top: 2rem;
             cursor: pointer;
+            z-index: 20;
         }
         .btn-sincere:hover {
             background: #4a5d4e;
@@ -67,6 +69,14 @@
         .reveal-text {
             transform: translateY(10px);
             opacity: 0;
+        }
+
+        .floating-emoji {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            z-index: 5;
+            filter: grayscale(0.2) opacity(0.7);
         }
     </style>
 </head>
@@ -115,6 +125,32 @@
     <script>
         const music = document.getElementById('bg-music');
         const startBtn = document.getElementById('start-btn');
+        let emojiInterval;
+
+        function createEmoji() {
+            const emojis = ['✨', '🥂', '🎈', '🥳', '🧁', '🌟'];
+            const emoji = document.createElement('div');
+            emoji.className = 'floating-emoji';
+            emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            const startX = Math.random() * window.innerWidth;
+            const size = Math.random() * (30 - 20) + 20;
+            
+            emoji.style.left = startX + 'px';
+            emoji.style.top = (window.innerHeight + 50) + 'px';
+            emoji.style.fontSize = size + 'px';
+            
+            document.body.appendChild(emoji);
+
+            gsap.to(emoji, {
+                y: -(window.innerHeight + 150),
+                x: startX + (Math.random() - 0.5) * 200,
+                rotation: Math.random() * 360,
+                duration: 8 + Math.random() * 4,
+                ease: "none",
+                onComplete: () => emoji.remove()
+            });
+        }
 
         function slowConfetti() {
             const defaults = {
@@ -131,6 +167,11 @@
                 spread: 70,
                 startVelocity: 30
             });
+            
+            // Extra emoji burst on celebration
+            for(let i=0; i<10; i++) {
+                setTimeout(createEmoji, i * 100);
+            }
         }
 
         startBtn.addEventListener('click', () => {
@@ -141,6 +182,9 @@
             }).catch(error => {
                 console.log("Playback failed:", error);
             });
+
+            // Start occasional floating emojis
+            emojiInterval = setInterval(createEmoji, 2000);
 
             const tl = gsap.timeline();
 
@@ -166,7 +210,12 @@
                 opacity: 1, 
                 visibility: "visible", 
                 duration: 1.5,
-                onStart: slowConfetti 
+                onStart: () => {
+                    slowConfetti();
+                    // Increase emoji frequency for the finale
+                    clearInterval(emojiInterval);
+                    emojiInterval = setInterval(createEmoji, 800);
+                }
               });
         });
     </script>
