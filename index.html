@@ -62,6 +62,7 @@
             color: #f4f1ea;
         }
 
+        /* Slow, purposeful animation targets */
         .reveal-text {
             transform: translateY(10px);
             opacity: 0;
@@ -70,8 +71,8 @@
 </head>
 <body>
 
-    <!-- Audio Element -->
-    <audio id="bg-music" loop preload="auto">
+    <!-- Audio Element with Autoplay attribute -->
+    <audio id="bg-music" loop preload="auto" autoplay>
         <source src="untitled.mp3" type="audio/mpeg">
         <source src="Untitled.mp3" type="audio/mpeg">
     </audio>
@@ -127,22 +128,10 @@
         }
 
         window.onload = () => {
-            // Attempt to start music immediately at the beginning
-            const playPromise = music.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    console.log("Autoplay started");
-                }).catch(error => {
-                    console.log("Autoplay blocked by browser. Music will start on the first click.");
-                    // Fallback: Start music on the very first click anywhere if autoplay was blocked
-                    const startOnGesture = () => {
-                        music.play();
-                        document.removeEventListener('click', startOnGesture);
-                    };
-                    document.addEventListener('click', startOnGesture);
-                });
-            }
+            // Forcefully attempt playback without interaction listeners
+            music.play().catch(error => {
+                console.log("Browser policy blocked autoplay. Attempting silent fallback or awaiting MEI.");
+            });
 
             const tl = gsap.timeline();
 
