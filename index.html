@@ -1,142 +1,196 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Birthday Wish - Dhruvi</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Lora:ital,wght@1,500&display=swap" rel="stylesheet">
-        <style>
-            body {
-                background-color: #f4f1ea; /* Creamy light base */
-                color: #4a5d4e; /* Charcoal */
-                font-family: 'DM Sans', sans-serif;
-                overflow: hidden;
-                margin: 0;
-                height: 100vh;
-            }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Wish - Dhruvi</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Lora:ital,wght@1,500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f1ea; /* Creamy light base */
+            color: #4a5d4e; /* Charcoal */
+            font-family: 'DM Sans', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+        }
 
-            .serif-italic {
-                font-family: 'Lora', serif;
-                font-style: italic;
-                color: #4a5d4e;
-            }
+        .serif-italic {
+            font-family: 'Lora', serif;
+            font-style: italic;
+            color: #4a5d4e;
+        }
 
-            .screen {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-                padding: 2rem;
-                opacity: 0;
-                visibility: hidden;
-            }
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            opacity: 0;
+            visibility: hidden;
+        }
 
-            .accent-bg { background-color: #a3b18a; } /* Sage Green */
-            .charcoal-text { color: #4a5d4e; }
+        .accent-bg { background-color: #a3b18a; } /* Sage Green */
+        .charcoal-text { color: #4a5d4e; }
 
-            .divider {
-                height: 1px;
-                background: #a3b18a;
-                width: 40px;
-                margin: 2rem 0;
-            }
+        .divider {
+            height: 1px;
+            background: #a3b18a;
+            width: 40px;
+            margin: 2rem 0;
+        }
 
-            .btn-sincere {
-                border: 1px solid #4a5d4e;
-                padding: 0.8rem 2.5rem;
-                border-radius: 2px;
-                font-size: 0.9rem;
-                letter-spacing: 0.05em;
-                transition: all 0.4s ease;
-                margin-top: 2rem;
-            }
-            .btn-sincere:hover {
-                background: #4a5d4e;
-                color: #f4f1ea;
-            }
+        .btn-sincere {
+            border: 1px solid #4a5d4e;
+            padding: 0.8rem 2.5rem;
+            border-radius: 2px;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            transition: all 0.4s ease;
+            margin-top: 2rem;
+            cursor: pointer;
+        }
+        .btn-sincere:hover {
+            background: #4a5d4e;
+            color: #f4f1ea;
+        }
 
-            /* Slow, purposeful animation targets */
-            .reveal-text {
-                transform: translateY(10px);
-                opacity: 0;
-            }
-        </style>
-    </head>
-    <body>
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        .music-control:hover { opacity: 1; }
 
-        <!-- Step 1: Simple Greeting -->
-        <div id="step1" class="screen">
-            <h1 class="text-4xl md:text-5xl font-medium tracking-tight charcoal-text">Happy Birthday, </h1>
-            <div class="divider"></div>
-            <p class="text-lg opacity-60">Hope you're having a good day.</p>
-        </div>
+        /* Slow, purposeful animation targets */
+        .reveal-text {
+            transform: translateY(10px);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
 
-        <!-- Step 2: Sincere Appreciation -->
-        <div id="step2" class="screen">
-            <div class="max-w-md">
-                <h2 class="text-3xl serif-italic mb-8">"Glad we're friends."</h2>
-                <div class="space-y-4">
-                    <p class="reveal-text text-xl">You've always been a real one.</p>
-                    <p class="reveal-text text-xl">Hope things go your way this year.</p>
-                    <p class="reveal-text text-xl">Keep doing your thing.</p>
-                </div>
+    <!-- Audio Element -->
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_730626087b.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="music-btn" class="music-control">
+        <span id="music-icon" class="text-2xl">🔇</span>
+    </div>
+
+    <!-- Step 0: Click to Start (Required for Audio Autoplay) -->
+    <div id="step0" class="screen" style="opacity: 1; visibility: visible;">
+        <h2 class="text-xl opacity-60 mb-6">A message for you</h2>
+        <button id="start-btn" class="btn-sincere">Open ✨</button>
+    </div>
+
+    <!-- Step 1: Simple Greeting -->
+    <div id="step1" class="screen">
+        <h1 class="text-4xl md:text-5xl font-medium tracking-tight charcoal-text">Happy Birthday, Dhruvi</h1>
+        <div class="divider"></div>
+        <p class="text-lg opacity-60">Hope you're having a good day.</p>
+    </div>
+
+    <!-- Step 2: Sincere Appreciation -->
+    <div id="step2" class="screen">
+        <div class="max-w-md">
+            <h2 class="text-3xl serif-italic mb-8">"Glad we're friends."</h2>
+            <div class="space-y-4">
+                <p class="reveal-text text-xl">You've always been a real one.</p>
+                <p class="reveal-text text-xl">Hope things go your way this year.</p>
+                <p class="reveal-text text-xl">Keep doing your thing.</p>
             </div>
         </div>
+    </div>
 
-        <!-- Step 3: Final Wish -->
-        <div id="step3" class="screen">
-            <div class="mb-6">
-                <span class="text-4xl">🥂</span>
-            </div>
-            <h2 class="text-5xl font-bold charcoal-text mb-4">Cheers, .</h2>
-            <p class="text-xl serif-italic opacity-80">Wishing you a solid year ahead.</p>
-            <button onclick="slowConfetti()" class="btn-sincere">Celebrate ✨</button>
+    <!-- Step 3: Final Wish -->
+    <div id="step3" class="screen">
+        <div class="mb-6">
+            <span class="text-4xl">🥂</span>
         </div>
+        <h2 class="text-5xl font-bold charcoal-text mb-4">Cheers, Dhruvi.</h2>
+        <p class="text-xl serif-italic opacity-80">Wishing you a solid year ahead.</p>
+        <button onclick="slowConfetti()" class="btn-sincere">Celebrate ✨</button>
+    </div>
 
-        <script>
-            function slowConfetti() {
-                const defaults = {
-                    origin: { y: 0.7 },
-                    colors: ['#a3b18a', '#4a5d4e', '#dad7cd'],
-                    shapes: ['circle'],
-                    gravity: 0.8,
-                    scalar: 0.7
-                };
+    <script>
+        const music = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+        const musicIcon = document.getElementById('music-icon');
+        const startBtn = document.getElementById('start-btn');
+        let isPlaying = false;
 
-                confetti({
-                    ...defaults,
-                    particleCount: 80,
-                    spread: 70,
-                    startVelocity: 30
-                });
+        function toggleMusic() {
+            if (isPlaying) {
+                music.pause();
+                musicIcon.innerText = "🔇";
+            } else {
+                music.play();
+                musicIcon.innerText = "🔊";
             }
+            isPlaying = !isPlaying;
+        }
 
-            window.onload = () => {
-                const tl = gsap.timeline();
+        musicBtn.addEventListener('click', toggleMusic);
 
-                // Slower, more purposeful pacing
-                tl.to("#step1", { opacity: 1, visibility: "visible", duration: 1.5 })
-                .to("#step1", { opacity: 0, duration: 1, delay: 2.5 })
-                
-                .to("#step2", { opacity: 1, visibility: "visible", duration: 1 })
-                .to(".reveal-text", { 
-                    opacity: 1, 
-                    y: 0, 
-                    stagger: 2, // Very slow staggered lines
-                    duration: 1.2,
-                    ease: "power2.out"
-                })
-                .to("#step2", { opacity: 0, duration: 1, delay: 2 })
-
-                .to("#step3", { opacity: 1, visibility: "visible", duration: 1.5 });
+        function slowConfetti() {
+            const defaults = {
+                origin: { y: 0.7 },
+                colors: ['#a3b18a', '#4a5d4e', '#dad7cd'],
+                shapes: ['circle'],
+                gravity: 0.8,
+                scalar: 0.7
             };
-        </script>
-    </body>
-    </html>
+
+            confetti({
+                ...defaults,
+                particleCount: 80,
+                spread: 70,
+                startVelocity: 30
+            });
+        }
+
+        startBtn.addEventListener('click', () => {
+            // Start Music
+            music.play();
+            isPlaying = true;
+            musicIcon.innerText = "🔊";
+
+            const tl = gsap.timeline();
+
+            // Slower, more purposeful pacing
+            tl.to("#step0", { opacity: 0, duration: 0.8, onComplete: () => {
+                document.getElementById('step0').style.visibility = 'hidden';
+            }})
+              .to("#step1", { opacity: 1, visibility: "visible", duration: 1.5 })
+              .to("#step1", { opacity: 0, duration: 1, delay: 2.5 })
+              
+              .to("#step2", { opacity: 1, visibility: "visible", duration: 1 })
+              .to(".reveal-text", { 
+                opacity: 1, 
+                y: 0, 
+                stagger: 2, 
+                duration: 1.2,
+                ease: "power2.out"
+              })
+              .to("#step2", { opacity: 0, duration: 1, delay: 2 })
+
+              .to("#step3", { opacity: 1, visibility: "visible", duration: 1.5 });
+        });
+    </script>
+</body>
+</html>
