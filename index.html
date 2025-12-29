@@ -73,9 +73,10 @@
 
     <!-- Audio Element -->
     <audio id="bg-music" loop preload="auto">
-        <!-- Replace 'Untitled.mp3' with your actual file path -->
+        <!-- Main source as specified -->
+        <source src="untitled.mp3" type="audio/mpeg">
+        <!-- Fallback to handle case sensitivity if needed -->
         <source src="Untitled.mp3" type="audio/mpeg">
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Step 1: Simple Greeting -->
@@ -128,20 +129,23 @@
             });
         }
 
-        // Critical: Function to start music on first user interaction
-        const handleFirstInteraction = () => {
+        // Logic to play music on first interaction (browser requirement)
+        const startMusic = () => {
             music.play().then(() => {
                 console.log("Music started");
-            }).catch(err => {
-                console.log("Waiting for user interaction...");
+            }).catch(e => {
+                console.log("Audio still blocked; waiting for another interaction.");
             });
-            // Remove listeners after first success or attempt
-            document.removeEventListener('click', handleFirstInteraction);
-            document.removeEventListener('touchstart', handleFirstInteraction);
+            // Keep trying to remove listeners on success
+            document.removeEventListener('click', startMusic);
+            document.removeEventListener('touchstart', startMusic);
+            document.removeEventListener('keydown', startMusic);
         };
 
-        document.addEventListener('click', handleFirstInteraction);
-        document.addEventListener('touchstart', handleFirstInteraction);
+        // Listen for any interaction to trigger the audio
+        document.addEventListener('click', startMusic);
+        document.addEventListener('touchstart', startMusic);
+        document.addEventListener('keydown', startMusic);
 
         window.onload = () => {
             const tl = gsap.timeline();
@@ -160,12 +164,15 @@
               })
               .to("#step2", { opacity: 0, duration: 1, delay: 2 })
 
+              // Triggers automatic confetti pop up on final screen
               .to("#step3", { 
                 opacity: 1, 
                 visibility: "visible", 
                 duration: 1.5,
                 onStart: () => {
                     slowConfetti();
+                    // One more attempt to play music here if it hasn't started
+                    music.play().catch(() => {});
                 }
               });
         };
