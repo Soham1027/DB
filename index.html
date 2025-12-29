@@ -128,26 +128,20 @@
         let emojiInterval;
 
         function createEmoji() {
-            const emojis = ['✨', '🥂', '🎈', '🥳', '🧁', '🌟'];
+            const emojis = ['🥂', '✨', '🎈', '🥳', '🍰', '🌸', '💃'];
             const emoji = document.createElement('div');
             emoji.className = 'floating-emoji';
             emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-            
-            const startX = Math.random() * window.innerWidth;
-            const size = Math.random() * (30 - 20) + 20;
-            
-            emoji.style.left = startX + 'px';
-            emoji.style.top = (window.innerHeight + 50) + 'px';
-            emoji.style.fontSize = size + 'px';
-            
+            emoji.style.left = Math.random() * 100 + 'vw';
+            emoji.style.top = '110vh';
             document.body.appendChild(emoji);
 
             gsap.to(emoji, {
-                y: -(window.innerHeight + 150),
-                x: startX + (Math.random() - 0.5) * 200,
+                y: '-120vh',
+                x: (Math.random() - 0.5) * 200,
                 rotation: Math.random() * 360,
-                duration: 8 + Math.random() * 4,
-                ease: "none",
+                duration: 4 + Math.random() * 3,
+                ease: "power1.out",
                 onComplete: () => emoji.remove()
             });
         }
